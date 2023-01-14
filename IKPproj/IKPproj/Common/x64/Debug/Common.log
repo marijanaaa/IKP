@@ -1,0 +1,9 @@
+﻿  NetworkFunctions.cpp
+NetworkFunctions.obj : error LNK2019: unresolved external symbol __WSAFDIsSet referenced in function "int __cdecl CustomSelect(unsigned __int64,enum OperationCodes)" (?CustomSelect@@YAH_KW4OperationCodes@@@Z)
+NetworkFunctions.obj : error LNK2019: unresolved external symbol __imp_recv referenced in function "int __cdecl RecieveBuffer(unsigned __int64,char *,int)" (?RecieveBuffer@@YAH_KPEADH@Z)
+NetworkFunctions.obj : error LNK2019: unresolved external symbol __imp_select referenced in function "int __cdecl CustomSelect(unsigned __int64,enum OperationCodes)" (?CustomSelect@@YAH_KW4OperationCodes@@@Z)
+NetworkFunctions.obj : error LNK2019: unresolved external symbol __imp_send referenced in function "int __cdecl SendBuffer(unsigned __int64,char const *,int)" (?SendBuffer@@YAH_KPEBDH@Z)
+NetworkFunctions.obj : error LNK2019: unresolved external symbol __imp_WSAGetLastError referenced in function "int __cdecl CustomSelect(unsigned __int64,enum OperationCodes)" (?CustomSelect@@YAH_KW4OperationCodes@@@Z)
+MSVCRTD.lib(exe_main.obj) : error LNK2019: unresolved external symbol main referenced in function "int __cdecl invoke_main(void)" (?invoke_main@@YAHXZ)
+C:\Users\Duks\Desktop\IKPproj\x64\Debug\Common.exe : fatal error LNK1120: 6 unresolved externals
+C:\Program Files\Microsoft Visual Studio\2022\Community\MSBuild\Microsoft\VC\v170\Microsoft.CppCommon.targets(1096,5): error MSB6006: "link.exe" exited with code 1120.

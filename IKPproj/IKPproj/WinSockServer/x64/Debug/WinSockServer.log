@@ -1,0 +1,9 @@
+﻿  WinSockServer.cpp
+D:\IKPproj\IKPproj\WinSockServer\WinSockServer.cpp(96,12): warning C4244: 'argument': conversion from 'time_t' to 'unsigned int', possible loss of data
+D:\IKPproj\IKPproj\WinSockServer\WinSockServer.cpp(110,9): warning C4101: 'clientSocket': unreferenced local variable
+D:\IKPproj\IKPproj\WinSockServer\WinSockServer.cpp(106,8): warning C4101: 'recvBuffer': unreferenced local variable
+D:\IKPproj\IKPproj\WinSockServer\WinSockServer.cpp(107,6): warning C4101: 'initBufferSize': unreferenced local variable
+D:\IKPproj\IKPproj\WinSockServer\WinSockServer.cpp(105,7): warning C4101: 'bufferSize': unreferenced local variable
+D:\IKPproj\IKPproj\WinSockServer\WinSockServer.cpp(343,7): warning C4551: function call missing argument list
+D:\IKPproj\IKPproj\WinSockServer\WinSockServer.cpp(383,15): warning C4101: 'clientAddr': unreferenced local variable
+  WinSockServer.vcxproj -> D:\IKPproj\IKPproj\x64\Debug\WinSockServer.exe
