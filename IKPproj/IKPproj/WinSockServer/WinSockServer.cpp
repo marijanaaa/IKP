@@ -302,10 +302,12 @@ int main()
 		int result = WaitForSingleObject(processors[i], 2000);
 		printf("%d\n",result);
 	}
+
 	for (int i = 0; i < 9; i++)
 		SAFE_DELETE_HANDLE(processors[i]);
 
 	SAFE_DELETE_HANDLE(ShutDownController);
+	getchar();
 	int socketsCount = 0;
 	/*SOCKET* sockets = GetAllSockets(&acceptedSockets, &socketsCount);
 	for (int i = 0; i < socketsCount; i++)
@@ -322,15 +324,21 @@ int main()
 	}
 	
 	WSACleanup();
+	closesocket(listenSocket);
 	//clearovanje mapa, napraviti fje
+	clientsQueue.Clear();
+	lobby.Clear();
 	ClearClientsMap(&clients);
+	getchar();
 	ClearClientsMap(&inGame);
+	getchar();
 	DeleteCriticalSection(&GameSetup);
 	SAFE_DELETE_HANDLE(FinishSignal);
-	closesocket(listenSocket);
+	free(users);
+	
 	//deleteovanje handleova
 	printf("\nPress any key to close");
-	_getch();
+	getchar();
 	return 0;
 }
 
@@ -398,6 +406,7 @@ DWORD WINAPI AcceptClients(LPVOID param) {
 		int iResult = ioctlsocket(info.acceptedSocket, FIONBIO, &mode);
 
 		if (iResult < 0) {
+			//free(input);
 			printf("non-blocking failed with error: %d\n", WSAGetLastError());
 			closesocket(info.acceptedSocket);
 			WSACleanup();
@@ -410,10 +419,12 @@ DWORD WINAPI AcceptClients(LPVOID param) {
 			}
 			else if (isFinished == -1) {
 				printf("[Accept clients] ended thread...\n");
+				free(input);
 				return 0;
 			}
 		}
 	}
+	//free(input);
 	printf("[Accept clients] ended thread...\n");
 
     return 0;
@@ -427,6 +438,7 @@ DWORD WINAPI AddClients(LPVOID param) {
 		if (result == -1) {
 			// FINISH_SIGNAL
 			printf("[AddClients] ended thread...\n");
+			//free(input);
 			return 0;
 		}
 		else if (result == 1) {
@@ -443,6 +455,7 @@ DWORD WINAPI AddClients(LPVOID param) {
 		LeaveCriticalSection(input->GameSetup);
 	}
 	printf("[Add clients] ended thread...\n");
+	//free(input);
 	return 0;
 }
 
@@ -467,18 +480,23 @@ DWORD WINAPI FeedClientsToProcess(LPVOID param) {
 				LeaveCriticalSection(input->GameSetup);
 				Sleep(100);
 				EnterCriticalSection(input->GameSetup);
+				//free(copy);
 				continue;
 			}
 			else if (result == -1) {
 				printf("[FeedClientsToProcess] ended thread...\n");
 				LeaveCriticalSection(input->GameSetup);
+				//free(input);
+				free(copy);
 				return 0;
 			}
 		}
 		LeaveCriticalSection(input->GameSetup);
+		//free(copy);
 		Sleep(100);
 	}
 	printf("[FeedClientsToProcess] ended thread...\n");
+	//free(input);
 	return 0;
 }
 
@@ -495,6 +513,8 @@ DWORD WINAPI GameHandler(LPVOID param) {
 			// FINISH_SIGNAL
 			printf("[GameHandler] ended thread...\n");
 			LeaveCriticalSection(input->GameSetup);
+			free(clientId);
+			//free(input);
 			Sleep(10);
 			return 0;
 		}
@@ -543,17 +563,16 @@ DWORD WINAPI GameHandler(LPVOID param) {
 
 			EnterCriticalSection(input->GameSetup);
 
-			char dataBuf[10];
 			if (data.guess == 0) {
-				strcpy_s(dataBuf, "Correct!");
+				printf("[GameHandler]: Saving response from client %d, response %s\n", clientInfo.id, "Correct!");
 			}
 			else if (data.guess == 1) {
-				strcpy_s(dataBuf, "Higher!");
+				printf("[GameHandler]: Saving response from client %d, response %s\n", clientInfo.id, "Higher!");
 			}
 			else if (data.guess == -1) {
-				strcpy_s(dataBuf, "Lower!");
+				printf("[GameHandler]: Saving response from client %d, response %s\n", clientInfo.id, "Lower!");
 			}
-			printf("[GameHandler]: Saving response from client %d, response %s\n", clientInfo.id, dataBuf);
+			
 			clientInfo.guess = data.guess;
 			clientInfo.isReady = true;
 			input->InGame->Insert(clientId, clientInfo);
@@ -563,6 +582,7 @@ DWORD WINAPI GameHandler(LPVOID param) {
 		}
 	}
 	printf("[GameHandler] ended thread...\n");
+	//free(input);
 	return 0;
 }
 
@@ -597,6 +617,8 @@ DWORD WINAPI ReadyCounter(LPVOID param) {
 				while (true) {
 					if (WaitForSingleObject(*input->FinishSignal, 0) == WAIT_OBJECT_0) {
 						LeaveCriticalSection(input->GameSetup);
+						free(users);
+						//free(input);
 						return 0;
 					}
 
@@ -621,6 +643,7 @@ DWORD WINAPI ReadyCounter(LPVOID param) {
 					input->InGame->Delete(usersInGame[i]);
 				}
 
+				free(usersInGame);
 				input->ClientsQueue->Clear();
 				for (int i = 0; i < keyCount; i++) {
 					ClientInfo clientInfo;
@@ -730,12 +753,14 @@ DWORD WINAPI ReadyCounter(LPVOID param) {
 				}
 
 			}
+			free(users);
 		}
 
 		LeaveCriticalSection(input->GameSetup);
 		Sleep(500);
 	}
 	printf("[Ready counter] ended thread...\n");
+	//free(input);
 	return 0;
 }
 
